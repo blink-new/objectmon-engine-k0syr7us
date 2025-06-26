@@ -11,7 +11,7 @@ interface ObjectmonSpriteProps {
 }
 
 // Procedural sprite generation for household objects
-const generateObjectmonSprite = (species: ObjectmonSpecies, isShiny = false): string => {
+const generateObjectmonSprite = (species: ObjectmonSpecies): string => {
   // This would normally be a complex pixel art generator
   // For now, we'll use emoji representations with CSS styling
   const spriteMap: Record<string, string> = {
@@ -32,14 +32,16 @@ const generateObjectmonSprite = (species: ObjectmonSpecies, isShiny = false): st
 
 export const ObjectmonSprite: React.FC<ObjectmonSpriteProps> = ({
   species,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   isShiny,
   animation = 'idle',
   size = 'medium',
   className
 }) => {
   const [currentFrame, setCurrentFrame] = useState(0);
-  const sprite = generateObjectmonSprite(species, isShiny);
+  const sprite = generateObjectmonSprite(species);
+
+  const shinyEffectClasses = isShiny ? "hue-rotate-60 saturate-150" : "";
+  const shinyFilterStyle = isShiny ? 'hue-rotate(60deg) saturate(1.5) brightness(1.2)' : 'none';
 
   useEffect(() => {
     if (animation === 'idle') {
@@ -69,7 +71,7 @@ export const ObjectmonSprite: React.FC<ObjectmonSpriteProps> = ({
       "pixelated", // Custom CSS class for pixel-perfect rendering
       sizeClasses[size],
       animationClasses[animation],
-      isShiny && "hue-rotate-60 saturate-150",
+      shinyEffectClasses,
       className
     )}>
       <div 
@@ -80,7 +82,7 @@ export const ObjectmonSprite: React.FC<ObjectmonSpriteProps> = ({
           sizeClasses[size]
         )}
         style={{
-          filter: isShiny ? 'hue-rotate(60deg) saturate(1.5) brightness(1.2)' : 'none',
+          filter: shinyFilterStyle,
           transform: animation === 'attack' ? `scale(${1 + Math.sin(currentFrame) * 0.1})` : 'none'
         }}
       >

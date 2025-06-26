@@ -18,12 +18,14 @@ type ToasterToast = ToastProps & {
   action?: ToastActionElement
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const actionTypes = {
   ADD_TOAST: "ADD_TOAST",
   UPDATE_TOAST: "UPDATE_TOAST",
+  UPSERT_TOAST: "UPSERT_TOAST",
   DISMISS_TOAST: "DISMISS_TOAST",
   REMOVE_TOAST: "REMOVE_TOAST",
-} as const
+} as const // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 let count = 0
@@ -74,6 +76,8 @@ const addToRemoveQueue = (toastId: string) => {
 
   toastTimeouts.set(toastId, timeout)
 }
+
+export type ToastActionElement = React.ElementRef<typeof ToastPrimitive.Action>;
 
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
