@@ -5,23 +5,21 @@ import { Graphics } from './engine/Graphics';
 import { Input } from './engine/Input';
 import { Tilemap } from './engine/Tilemap';
 import { Sprite } from './engine/Sprite';
+import { ImageGenerator } from './engine/ImageGenerator';
 
 const SCREEN_WIDTH = 160;
 const SCREEN_HEIGHT = 144;
 
 const mapData = [
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
-  [1, 2, 3, 3, 3, 2, 2, 3, 3, 3, 2, 2, 3, 3, 3, 2, 2, 3, 2, 1],
-  [1, 2, 3, 4, 3, 2, 2, 3, 4, 3, 2, 2, 3, 4, 3, 2, 2, 3, 2, 1],
-  [1, 2, 3, 3, 3, 2, 2, 3, 3, 3, 2, 2, 3, 3, 3, 2, 2, 3, 2, 1],
-  [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
-  [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
-  [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
-  [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
-  [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
-  [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+  [1, 2, 3, 3, 3, 2, 3, 3, 2, 1],
+  [1, 2, 3, 4, 3, 2, 3, 4, 2, 1],
+  [1, 2, 3, 3, 3, 2, 3, 3, 2, 1],
+  [1, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+  [1, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+  [1, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
 
 function App() {
@@ -30,8 +28,13 @@ function App() {
   const handleCanvasReady = (canvas: HTMLCanvasElement) => {
     const graphics = new Graphics(canvas);
     const input = new Input();
-    const tilemap = new Tilemap('/assets/tileset.png', mapData, 8);
-    const player = new Sprite('/assets/player.png', 80, 72, 16, 16);
+    
+    // Generate images as data URLs
+    const tilesetDataUrl = ImageGenerator.generateTileset();
+    const playerDataUrl = ImageGenerator.generatePlayerSprite();
+    
+    const tilemap = new Tilemap(tilesetDataUrl, mapData, 16);
+    const player = new Sprite(playerDataUrl, 80, 48, 16, 16);
 
     player.addAnimation('idle', [0]);
     player.addAnimation('walkDown', [0, 1, 2, 3]);
