@@ -15,6 +15,12 @@ export class Sprite {
   constructor(spriteSrc: string, x: number, y: number, frameWidth: number, frameHeight: number) {
     this.image = new Image();
     this.image.src = spriteSrc;
+    this.image.onload = () => {
+      // Image loaded successfully
+    };
+    this.image.onerror = () => {
+      console.error('Failed to load sprite image:', spriteSrc);
+    };
     this.x = x;
     this.y = y;
     this.frameWidth = frameWidth;

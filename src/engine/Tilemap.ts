@@ -16,6 +16,9 @@ export class Tilemap {
     this.tileset.onload = () => {
       this.tilesetCols = this.tileset.width / this.tileSize;
     };
+    this.tileset.onerror = () => {
+      console.error('Failed to load tileset image:', tilesetSrc);
+    };
   }
 
   draw(graphics: Graphics) {
