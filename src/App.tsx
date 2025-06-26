@@ -41,71 +41,72 @@ function App() {
     tilemapRef.current = tilemap;
     playerRef.current = player;
 
-    let assetsLoaded = 0;
-    const totalAssets = 2; // tileset and player sprite
+    // Use promises to ensure images are loaded before starting the game loop
+    const tilemapLoadedPromise = new Promise<void>(resolve => {
+      tilemap.tileset.onload = () => {
+        tilemap.isLoaded = true;
+        resolve();
+      };
+    });
 
-    const checkAssetsLoaded = () => {
-      assetsLoaded++;
-      if (assetsLoaded === totalAssets) {
-        // All assets loaded, start game loop
-        gameLoopRef.current = new GameLoop(update, render);
-        gameLoopRef.current.start();
-      }
-    };
+    const playerLoadedPromise = new Promise<void>(resolve => {
+      player.image.onload = () => {
+        player.isLoaded = true;
+        player.addAnimation('idle', [0]);
+        player.addAnimation('walkDown', [0, 1, 2, 3]);
+        player.addAnimation('walkUp', [4, 5, 6, 7]);
+        player.addAnimation('walkLeft', [8, 9, 10, 11]);
+        player.addAnimation('walkRight', [12, 13, 14, 15]);
+        resolve();
+      };
+    });
 
-    // Override onload to use checkAssetsLoaded
-    tilemap.tileset.onload = checkAssetsLoaded;
-    player.image.onload = () => {
-      player.isLoaded = true;
-      player.addAnimation('idle', [0]);
-      player.addAnimation('walkDown', [0, 1, 2, 3]);
-      player.addAnimation('walkUp', [4, 5, 6, 7]);
-      player.addAnimation('walkLeft', [8, 9, 10, 11]);
-      player.addAnimation('walkRight', [12, 13, 14, 15]);
-      checkAssetsLoaded();
-    };
+    Promise.all([tilemapLoadedPromise, playerLoadedPromise]).then(() => {
+      const update = (deltaTime: number) => {
+        const speed = 50; // pixels per second
+        let isMoving = false;
 
-    const update = (deltaTime: number) => {
-      const speed = 50; // pixels per second
-      let isMoving = false;
+        if (input.isKeyDown('ArrowUp')) {
+          player.y -= speed * deltaTime;
+          player.setAnimation('walkUp');
+          isMoving = true;
+        }
+        if (input.isKeyDown('ArrowDown')) {
+          player.y += speed * deltaTime;
+          player.setAnimation('walkDown');
+          isMoving = true;
+        }
+        if (input.isKeyDown('ArrowLeft')) {
+          player.x -= speed * deltaTime;
+          player.setAnimation('walkLeft');
+          isMoving = true;
+        }
+        if (input.isKeyDown('ArrowRight')) {
+          player.x += speed * deltaTime;
+          player.setAnimation('walkRight');
+          isMoving = true;
+        }
 
-      if (input.isKeyDown('ArrowUp')) {
-        player.y -= speed * deltaTime;
-        player.setAnimation('walkUp');
-        isMoving = true;
-      }
-      if (input.isKeyDown('ArrowDown')) {
-        player.y += speed * deltaTime;
-        player.setAnimation('walkDown');
-        isMoving = true;
-      }
-      if (input.isKeyDown('ArrowLeft')) {
-        player.x -= speed * deltaTime;
-        player.setAnimation('walkLeft');
-        isMoving = true;
-      }
-      if (input.isKeyDown('ArrowRight')) {
-        player.x += speed * deltaTime;
-        player.setAnimation('walkRight');
-        isMoving = true;
-      }
+        if (!isMoving) {
+          player.setAnimation('idle');
+        }
 
-      if (!isMoving) {
-        player.setAnimation('idle');
-      }
+        player.update(deltaTime);
+      };
 
-      player.update(deltaTime);
-    };
+      const render = () => {
+        graphics.clear();
+        if (tilemapRef.current?.isLoaded) {
+          tilemapRef.current.draw(graphics);
+        }
+        if (playerRef.current?.isLoaded) {
+          playerRef.current.draw(graphics);
+        }
+      };
 
-    const render = () => {
-      graphics.clear();
-      if (tilemapRef.current?.isLoaded) {
-        tilemapRef.current.draw(graphics);
-      }
-      if (playerRef.current?.isLoaded) {
-        playerRef.current.draw(graphics);
-      }
-    };
+      gameLoopRef.current = new GameLoop(update, render);
+      gameLoopRef.current.start();
+    });
   };
 
   useEffect(() => {
