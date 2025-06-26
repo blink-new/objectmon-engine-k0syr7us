@@ -317,7 +317,7 @@ export class ObjectmonEngine {
   }
 
   // Battle System
-  startBattle(opponent: ObjectmonInstance, isTrainer = false): void {
+  startBattle(opponent: ObjectmonInstance): void {
     if (!this.gameState.player || this.gameState.player.party.length === 0) {
       throw new Error('Cannot start battle without player or party');
     }

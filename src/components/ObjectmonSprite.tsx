@@ -30,12 +30,13 @@ const generateObjectmonSprite = (species: ObjectmonSpecies, isShiny = false): st
   return spriteMap[species.name] || '📦';
 };
 
-export const ObjectmonSprite: React.FC<ObjectmonSpriteProps> = ({ 
-  species, 
-  isShiny = false, 
+export const ObjectmonSprite: React.FC<ObjectmonSpriteProps> = ({
+  species,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  isShiny,
   animation = 'idle',
   size = 'medium',
-  className 
+  className
 }) => {
   const [currentFrame, setCurrentFrame] = useState(0);
   const sprite = generateObjectmonSprite(species, isShiny);

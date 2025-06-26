@@ -11,8 +11,6 @@ interface BattleScreenProps {
   opponentObjectmon: ObjectmonInstance;
   onAttack: (moveId: number) => void;
   onRun: () => void;
-  onSwitchObjectmon: () => void;
-  onUseItem: () => void;
   messages: string[];
   isPlayerTurn: boolean;
 }
@@ -22,8 +20,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
   opponentObjectmon,
   onAttack,
   onRun,
-  onSwitchObjectmon,
-  onUseItem,
   messages,
   isPlayerTurn
 }) => {

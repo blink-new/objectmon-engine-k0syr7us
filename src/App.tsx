@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { GameBoyScreen } from './components/GameBoyScreen';
 import { TitleScreen } from './components/TitleScreen';
 import { BattleScreen } from './components/BattleScreen';
@@ -6,12 +6,12 @@ import { ObjectmonEngine, GameState, OBJECTMON_SPECIES } from './engine/Objectmo
 import toast from 'react-hot-toast';
 
 function App() {
-  const [engine] = useState(() => new ObjectmonEngine());
-  const [gameState, setGameState] = useState<GameState>(engine.getGameState());
-  const [battleMessages, setBattleMessages] = useState<string[]>([]);
+  const [engine] = React.useState(() => new ObjectmonEngine());
+  const [gameState, setGameState] = React.useState<GameState>(engine.getGameState());
+  const [battleMessages, setBattleMessages] = React.useState<string[]>([]);
 
   // Load save slot data
-  const [saveSlots] = useState(() => {
+  const [saveSlots] = React.useState(() => {
     return [1, 2, 3].map(slot => {
       const saveData = localStorage.getItem(`objectmon_save_${slot}`);
       if (saveData) {
@@ -32,7 +32,7 @@ function App() {
   });
 
   // Update UI when game state changes
-  useEffect(() => {
+  React.useEffect(() => {
     const interval = setInterval(() => {
       const currentState = engine.getGameState();
       setGameState({ ...currentState });
