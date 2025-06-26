@@ -22,5 +22,19 @@ export class Graphics {
     this.ctx.fillRect(x, y, width, height);
   }
 
-  // Add methods for drawing tiles, sprites, etc.
+  drawTile(
+    image: HTMLImageElement,
+    sx: number, sy: number, sWidth: number, sHeight: number,
+    dx: number, dy: number, dWidth: number, dHeight: number
+  ) {
+    this.ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+  }
+
+  drawSprite(
+    image: HTMLImageElement,
+    sx: number, sy: number, sWidth: number, sHeight: number,
+    dx: number, dy: number, dWidth: number, dHeight: number
+  ) {
+    this.ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+  }
 }

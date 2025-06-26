@@ -3,38 +3,78 @@ import { GameBoyScreen } from './components/GameBoyScreen';
 import { GameLoop } from './engine/GameLoop';
 import { Graphics } from './engine/Graphics';
 import { Input } from './engine/Input';
+import { Tilemap } from './engine/Tilemap';
+import { Sprite } from './engine/Sprite';
 
 const SCREEN_WIDTH = 160;
 const SCREEN_HEIGHT = 144;
 
+const mapData = [
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+  [1, 2, 3, 3, 3, 2, 2, 3, 3, 3, 2, 2, 3, 3, 3, 2, 2, 3, 2, 1],
+  [1, 2, 3, 4, 3, 2, 2, 3, 4, 3, 2, 2, 3, 4, 3, 2, 2, 3, 2, 1],
+  [1, 2, 3, 3, 3, 2, 2, 3, 3, 3, 2, 2, 3, 3, 3, 2, 2, 3, 2, 1],
+  [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+  [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+  [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+  [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+  [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+  [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+];
+
 function App() {
   const gameLoopRef = useRef<GameLoop | null>(null);
-  const playerRef = useRef({ x: 80, y: 72, width: 8, height: 8 });
 
   const handleCanvasReady = (canvas: HTMLCanvasElement) => {
     const graphics = new Graphics(canvas);
     const input = new Input();
+    const tilemap = new Tilemap('/assets/tileset.png', mapData, 8);
+    const player = new Sprite('/assets/player.png', 80, 72, 16, 16);
+
+    player.addAnimation('idle', [0]);
+    player.addAnimation('walkDown', [0, 1, 2, 3]);
+    player.addAnimation('walkUp', [4, 5, 6, 7]);
+    player.addAnimation('walkLeft', [8, 9, 10, 11]);
+    player.addAnimation('walkRight', [12, 13, 14, 15]);
 
     const update = (deltaTime: number) => {
-      const speed = 100; // pixels per second
+      const speed = 50; // pixels per second
+      let isMoving = false;
+
       if (input.isKeyDown('ArrowUp')) {
-        playerRef.current.y -= speed * deltaTime;
+        player.y -= speed * deltaTime;
+        player.setAnimation('walkUp');
+        isMoving = true;
       }
       if (input.isKeyDown('ArrowDown')) {
-        playerRef.current.y += speed * deltaTime;
+        player.y += speed * deltaTime;
+        player.setAnimation('walkDown');
+        isMoving = true;
       }
       if (input.isKeyDown('ArrowLeft')) {
-        playerRef.current.x -= speed * deltaTime;
+        player.x -= speed * deltaTime;
+        player.setAnimation('walkLeft');
+        isMoving = true;
       }
       if (input.isKeyDown('ArrowRight')) {
-        playerRef.current.x += speed * deltaTime;
+        player.x += speed * deltaTime;
+        player.setAnimation('walkRight');
+        isMoving = true;
       }
+
+      if (!isMoving) {
+        player.setAnimation('idle');
+      }
+
+      player.update(deltaTime);
     };
 
     const render = () => {
       graphics.clear();
-      const player = playerRef.current;
-      graphics.drawRect(player.x, player.y, player.width, player.height, 3);
+      tilemap.draw(graphics);
+      player.draw(graphics);
     };
 
     gameLoopRef.current = new GameLoop(update, render);
