@@ -5,24 +5,27 @@ export class Tilemap {
   private map: number[][];
   private tileSize: number;
   private tilesetCols: number;
+  public isLoaded: boolean;
 
   constructor(tilesetSrc: string, map: number[][], tileSize: number) {
     this.tileset = new Image();
-    this.tileset.src = tilesetSrc;
     this.map = map;
     this.tileSize = tileSize;
     this.tilesetCols = 0;
+    this.isLoaded = false;
 
     this.tileset.onload = () => {
       this.tilesetCols = this.tileset.width / this.tileSize;
+      this.isLoaded = true;
     };
     this.tileset.onerror = () => {
       console.error('Failed to load tileset image:', tilesetSrc);
     };
+    this.tileset.src = tilesetSrc;
   }
 
   draw(graphics: Graphics) {
-    if (!this.tileset.complete) return;
+    if (!this.isLoaded) return;
 
     for (let row = 0; row < this.map.length; row++) {
       for (let col = 0; col < this.map[row].length; col++) {

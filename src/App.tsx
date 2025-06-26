@@ -24,6 +24,8 @@ const mapData = [
 
 function App() {
   const gameLoopRef = useRef<GameLoop | null>(null);
+  const tilemapRef = useRef<Tilemap | null>(null);
+  const playerRef = useRef<Sprite | null>(null);
 
   const handleCanvasReady = (canvas: HTMLCanvasElement) => {
     const graphics = new Graphics(canvas);
@@ -36,11 +38,32 @@ function App() {
     const tilemap = new Tilemap(tilesetDataUrl, mapData, 16);
     const player = new Sprite(playerDataUrl, 80, 48, 16, 16);
 
-    player.addAnimation('idle', [0]);
-    player.addAnimation('walkDown', [0, 1, 2, 3]);
-    player.addAnimation('walkUp', [4, 5, 6, 7]);
-    player.addAnimation('walkLeft', [8, 9, 10, 11]);
-    player.addAnimation('walkRight', [12, 13, 14, 15]);
+    tilemapRef.current = tilemap;
+    playerRef.current = player;
+
+    let assetsLoaded = 0;
+    const totalAssets = 2; // tileset and player sprite
+
+    const checkAssetsLoaded = () => {
+      assetsLoaded++;
+      if (assetsLoaded === totalAssets) {
+        // All assets loaded, start game loop
+        gameLoopRef.current = new GameLoop(update, render);
+        gameLoopRef.current.start();
+      }
+    };
+
+    // Override onload to use checkAssetsLoaded
+    tilemap.tileset.onload = checkAssetsLoaded;
+    player.image.onload = () => {
+      player.isLoaded = true;
+      player.addAnimation('idle', [0]);
+      player.addAnimation('walkDown', [0, 1, 2, 3]);
+      player.addAnimation('walkUp', [4, 5, 6, 7]);
+      player.addAnimation('walkLeft', [8, 9, 10, 11]);
+      player.addAnimation('walkRight', [12, 13, 14, 15]);
+      checkAssetsLoaded();
+    };
 
     const update = (deltaTime: number) => {
       const speed = 50; // pixels per second
@@ -76,12 +99,13 @@ function App() {
 
     const render = () => {
       graphics.clear();
-      tilemap.draw(graphics);
-      player.draw(graphics);
+      if (tilemapRef.current?.isLoaded) {
+        tilemapRef.current.draw(graphics);
+      }
+      if (playerRef.current?.isLoaded) {
+        playerRef.current.draw(graphics);
+      }
     };
-
-    gameLoopRef.current = new GameLoop(update, render);
-    gameLoopRef.current.start();
   };
 
   useEffect(() => {

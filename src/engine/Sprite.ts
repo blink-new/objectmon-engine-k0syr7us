@@ -11,16 +11,10 @@ export class Sprite {
   private currentAnimation: string;
   private animationTimer: number;
   private animationSpeed: number;
+  public isLoaded: boolean;
 
   constructor(spriteSrc: string, x: number, y: number, frameWidth: number, frameHeight: number) {
     this.image = new Image();
-    this.image.src = spriteSrc;
-    this.image.onload = () => {
-      // Image loaded successfully
-    };
-    this.image.onerror = () => {
-      console.error('Failed to load sprite image:', spriteSrc);
-    };
     this.x = x;
     this.y = y;
     this.frameWidth = frameWidth;
@@ -30,6 +24,15 @@ export class Sprite {
     this.currentAnimation = 'idle';
     this.animationTimer = 0;
     this.animationSpeed = 0.1; // seconds per frame
+    this.isLoaded = false;
+
+    this.image.onload = () => {
+      this.isLoaded = true;
+    };
+    this.image.onerror = () => {
+      console.error('Failed to load sprite image:', spriteSrc);
+    };
+    this.image.src = spriteSrc;
   }
 
   addAnimation(name: string, frames: number[]) {
@@ -56,7 +59,7 @@ export class Sprite {
   }
 
   draw(graphics: Graphics) {
-    if (!this.image.complete) return;
+    if (!this.isLoaded) return;
 
     const animation = this.animations[this.currentAnimation];
     if (!animation) return;
